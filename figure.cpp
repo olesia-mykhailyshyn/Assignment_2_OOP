@@ -1,3 +1,4 @@
+#include <cmath>
 #include "figure.h"
 #include "board.h"
 
@@ -31,6 +32,8 @@ void Triangle::drawTriangle(Board& board, int x, int y, int height) {
 }
 
 void Rectangle::drawRectangle(Board& board, int xPos, int yPos, int width, int height) {
+    if (width <=0) { return;}
+    if (height <=0) { return;}
     if (xPos < 0 || yPos < 0 || width < 1 || height < 1)
 
     this->xPos = xPos;
@@ -54,6 +57,40 @@ void Rectangle::drawRectangle(Board& board, int xPos, int yPos, int width, int h
                     board.grid[y + yPos][x + xPos] = '*';
                 }
             }
+        }
+    }
+}
+
+void Circle::drawCircle(Board& board, int x, int y, int radius) {
+    if (radius <=0) { return;}
+    if (radius < 1 || x - radius < 0 || x + radius >= board.boardWidth ||
+        y - radius < 0 || y + radius >= board.boardHeight) {
+        std::cerr << "Invalid circle parameters!" << std::endl;
+        return;
+    }
+
+    //for horisontal movement
+    for (int i = 0; i <= 2 * radius; i++) {
+        //for vertical movement
+        for (int j = 0; j <= 2 * radius; j++ ) {
+            dist = sqrt((i - radius) * (i - radius) + (j - radius) * (j - radius));
+            // dist should be in the range (radius - 0.5)
+            // and (radius + 0.5) to print stars(*)
+            if (dist > radius - 0.5 && dist < radius + 0.5)
+                std::cout << "*";
+            else
+                std::cout << " ";
+        }
+        std::cout << "\n";
+    }
+}
+
+void Line::drawLine(Board& board, int x, int y, int size) {
+    if (size <= 0) return;
+    for (int i = 0; i < size; ++i) {
+        int drawX = x + i;
+        if (drawX >= 0 && drawX < board.boardWidth && y >= 0 && y < board.boardHeight) {
+            board.grid[y][drawX] = '*';
         }
     }
 }

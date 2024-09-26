@@ -5,6 +5,8 @@
 class Figure;
 class Triangle;
 class Rectangle;
+class Circle;
+class Line;
 
 class Board {
 public:
@@ -16,6 +18,8 @@ public:
     friend class Figure;
     friend class Triangle;
     friend class Rectangle;
+    friend class Circle;
+    friend class Line;
 
 private:
     int boardWidth = 80; //columns

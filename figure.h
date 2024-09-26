@@ -31,3 +31,16 @@ private:
     int drawAreaWidth;
     int drawAreaHeight;
 };
+
+class Circle: public Figure {
+public:
+    void drawCircle(Board& board, int x, int y, int radius);
+private:
+    float dist; //distance to the centre
+};
+
+class Line: public Figure {
+public:
+    void drawLine(Board& board, int x, int y, int size);
+private:
+};
