@@ -31,30 +31,30 @@ void Triangle::drawTriangle(Board& board, int x, int y, int height) {
     }
 }
 
-void Rectangle::drawRectangle(Board& board, int xPos, int yPos, int width, int height) {
+void Rectangle::drawRectangle(Board& board, int xPos, int y, int width, int height) {
     if (width <=0) { return;}
     if (height <=0) { return;}
-    if (xPos < 0 || yPos < 0 || width < 1 || height < 1)
+    if (xPos < 0 || y < 0 || width < 1 || height < 1)
 
-    this->xPos = xPos;
-    this->yPos = yPos;
+    this->x = xPos;
+    this->y = y;
     this->width = width;
     this->height = height;
 
     rectRightXIndex = xPos + width - 1;
     rectLeftXIndex = xPos;
-    rectBottomYIndex = yPos + height - 1;
-    rectTopYIndex = yPos;
+    rectBottomYIndex = y + height - 1;
+    rectTopYIndex = y;
     drawAreaWidth = rectRightXIndex - rectLeftXIndex + 1;
     drawAreaHeight = rectBottomYIndex - rectTopYIndex + 1;
 
     for (int y = 0; y < drawAreaHeight; y++) {
         for (int x = 0; x < drawAreaWidth; x++) {
             if ((x + xPos >= rectLeftXIndex && x + xPos <= rectRightXIndex) &&
-                (y + yPos >= rectTopYIndex && y + yPos <= rectBottomYIndex)) {
-                if (y + yPos == rectTopYIndex || y + yPos == rectBottomYIndex ||
+                (y + y >= rectTopYIndex && y + y <= rectBottomYIndex)) {
+                if (y + y == rectTopYIndex || y + y == rectBottomYIndex ||
                     x + xPos == rectLeftXIndex || x + xPos == rectRightXIndex) {
-                    board.grid[y + yPos][x + xPos] = '*';
+                    board.grid[y + y][x + xPos] = '*';
                 }
             }
         }

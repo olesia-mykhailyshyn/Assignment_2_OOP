@@ -7,4 +7,6 @@ add_executable(Assignment_2 main.cpp
         board.h
         board.cpp
         figure.cpp
-        figure.h)
+        figure.h
+        CLI.h
+        CLI.cpp)

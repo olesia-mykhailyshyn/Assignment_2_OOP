@@ -4,6 +4,7 @@
 
 class Figure {
 public:
+    virtual void draw(Board& board) const = 0;
 
 protected:
 };
@@ -15,13 +16,13 @@ public:
 
 class Rectangle: public Figure {
 public:
-    Rectangle() : xPos(0), yPos(0), width(0), height(0), rectRightXIndex(0), rectLeftXIndex(0),
-              rectBottomYIndex(0), rectTopYIndex(0), drawAreaWidth(0), drawAreaHeight(0) {}
+    Rectangle() : x(0), y(0), width(0), height(0), rectRightXIndex(0), rectLeftXIndex(0),
+                  rectBottomYIndex(0), rectTopYIndex(0), drawAreaWidth(0), drawAreaHeight(0) {}
 
-    void drawRectangle(Board& board, int xPos, int yPos, int width, int height);
+    void drawRectangle(Board& board, int x, int y, int width, int height);
 private:
-    int xPos;
-    int yPos;
+    int x;
+    int y;
     int width;
     int height;
     int rectRightXIndex;
