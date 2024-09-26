@@ -2,6 +2,10 @@
 #include <vector>
 #include "iostream"
 
+class Figure;
+class Triangle;
+class Rectangle;
+
 class Board {
 public:
     Board() : grid(boardHeight, std::vector<char>(boardWidth, ' ')) {}
@@ -9,7 +13,9 @@ public:
 
     void print() const;
 
-    void drawTriangle(int x, int y, int height);
+    friend class Figure;
+    friend class Triangle;
+    friend class Rectangle;
 
 private:
     int boardWidth = 80; //columns

@@ -5,4 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Assignment_2 main.cpp
         board.h
-        board.cpp)
+        board.cpp
+        figure.cpp
+        figure.h)
