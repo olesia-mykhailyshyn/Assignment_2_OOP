@@ -1,6 +1,8 @@
-#include <iostream>
+#include "board.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    Board board;
+    board.drawTriangle(20,1,5);
+    board.print();
     return 0;
 }
