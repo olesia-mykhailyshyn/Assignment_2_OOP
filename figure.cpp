@@ -32,29 +32,16 @@ void Triangle::draw(Board& board) {
 }
 
 void Rectangle::draw(Board& board) {
-    if (width <=0) { return;}
-    if (height <=0) { return;}
-    if (xPos < 0 || y < 0 || width < 1 || height < 1)
+    if (width <= 0 || height <= 0 || x < 0 || y < 0) return;
 
-    this->x = xPos;
-    this->y = y;
-    this->width = width;
-    this->height = height;
+    int right = std::min(x + width - 1, board.boardWidth - 1);
+    int bottom = std::min(y + height - 1, board.boardHeight - 1);
 
-    rectRightXIndex = xPos + width - 1;
-    rectLeftXIndex = xPos;
-    rectBottomYIndex = y + height - 1;
-    rectTopYIndex = y;
-    drawAreaWidth = rectRightXIndex - rectLeftXIndex + 1;
-    drawAreaHeight = rectBottomYIndex - rectTopYIndex + 1;
-
-    for (int y = 0; y < drawAreaHeight; y++) {
-        for (int x = 0; x < drawAreaWidth; x++) {
-            if ((x + xPos >= rectLeftXIndex && x + xPos <= rectRightXIndex) &&
-                (y + y >= rectTopYIndex && y + y <= rectBottomYIndex)) {
-                if (y + y == rectTopYIndex || y + y == rectBottomYIndex ||
-                    x + xPos == rectLeftXIndex || x + xPos == rectRightXIndex) {
-                    board.grid[y + y][x + xPos] = '*';
+    for (int row = y; row <= bottom; ++row) {
+        for (int col = x; col <= right; ++col) {
+            if (row == y || row == bottom || col == x || col == right) {
+                if (col >= 0 && row >= 0) {
+                    board.grid[row][col] = '*';
                 }
             }
         }
@@ -62,28 +49,22 @@ void Rectangle::draw(Board& board) {
 }
 
 void Circle::draw(Board& board) {
-    if (radius <=0) { return;}
-    if (radius < 1 || x - radius < 0 || x + radius >= board.boardWidth ||
-        y - radius < 0 || y + radius >= board.boardHeight) {
-        std::cerr << "Invalid circle parameters!" << std::endl;
-        return;
-    }
+    if (radius <= 0) return;
 
-    //for horizontal movement
-    for (int i = 0; i <= 2 * radius; i++) {
-        //for vertical movement
-        for (int j = 0; j <= 2 * radius; j++ ) {
-            dist = sqrt((i - radius) * (i - radius) + (j - radius) * (j - radius));
-            // dist should be in the range (radius - 0.5)
-            // and (radius + 0.5) to print stars(*)
-            if (dist > radius - 0.5 && dist < radius + 0.5)
-                std::cout << "*";
-            else
-                std::cout << " ";
+    // Якщо коло виходить за межі дошки, дозволити малювання в допустимій частині
+    for (int i = -radius; i <= radius; ++i) {
+        for (int j = -radius; j <= radius; ++j) {
+            if (i * i + j * j <= radius * radius) {
+                int drawX = x + j;
+                int drawY = y + i;
+                if (drawX >= 0 && drawX < board.boardWidth && drawY >= 0 && drawY < board.boardHeight) {
+                    board.grid[drawY][drawX] = '*';
+                }
+            }
         }
-        std::cout << "\n";
     }
 }
+
 
 void Line::draw(Board& board) {
     if (size <= 0) return;

@@ -1,9 +1,16 @@
 #include "CLI.h"
 #include <memory>
+#include "board.h"
 
-void CLI::draw() const {
+void CLI::draw() {
+    board.grid.assign(board.boardHeight, std::vector<char>(board.boardWidth, ' '));
+    for (const auto& figure : board.getFigures()) {
+        figure->draw(board);
+    }
     board.print();
 }
+
+
 void CLI::list() const {
     std::cout << "Figures on the board:" << std::endl;
     for (const std::shared_ptr<Figure>& figure : board.getFigures()) {
@@ -36,11 +43,26 @@ void CLI::add(Board& board, const std::string& shapeName, int x, int y, int para
     }
 }
 
-void CLI::redo() const {}
+void CLI::redo() {
+    if(board.figures.empty()) {
+        std::cout<< "There are no figures. Redo command can not be done." << std::endl;
+    }
+    else {
+        board.figures.pop_back();
+        std::cout<< "The last added figure was deleted." << std::endl;
+    }
+}
+
 void CLI::save(const std::string& filePath) const {}
 void CLI::load(const std::string& filePath) const {}
 
 void CLI::clear() {
-    system("cls");
-    std::cout << "All shapes are removed from the blackboard." << std::endl;
+    //system("cls");
+    if(board.figures.empty()) {
+        std::cout<< "There are no figures. Clear command can not be done - nothing will change." << std::endl;
+    }
+    else{
+        board.figures.clear();
+        std::cout << "All shapes are removed from the blackboard." << std::endl;
+    }
 }

@@ -5,7 +5,7 @@
 int main() {
     CLI cli;
     while (true) {
-        std::cout << "Enter command (draw/list/shapes/add/redo/clear/save/load/exit): " << std::endl;
+        std::cout << "\nEnter command (draw/list/shapes/add/redo/clear/save/load/exit): " << std::endl;
         std::cin >> cli.command;
 
         if (cli.command == "draw") {
@@ -39,7 +39,6 @@ int main() {
 
                 CLI::add(cli.board, cli.shapeName, cli.x, cli.y, cli.parameter1);
             }
-            cli.draw();
         }
         else if (cli.command == "redo") {
             cli.redo();
