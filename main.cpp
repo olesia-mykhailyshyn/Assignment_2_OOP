@@ -9,10 +9,10 @@ int main() {
         std::cin >> cli.command;
 
         if (cli.command == "draw") {
-            cli.draw();
+            CLI::draw();
         }
         else if (cli.command == "list") {
-            cli.list();
+            CLI::list();
         }
         else if (cli.command == "shapes") {
             cli.shapes();
@@ -31,17 +31,17 @@ int main() {
                 std::cout << "Enter height: " << std::endl;
                 std::cin >> cli.parameter2;
 
-                CLI::add(cli.board, cli.shapeName, cli.x, cli.y, cli.parameter1, cli.parameter2);
+                CLI::add(CLI::board, cli.shapeName, cli.x, cli.y, cli.parameter1, cli.parameter2);
             }
             else {
                 std::cout << "Enter height/radius/size: " << std::endl;
                 std::cin >> cli.parameter1;
 
-                CLI::add(cli.board, cli.shapeName, cli.x, cli.y, cli.parameter1);
+                CLI::add(CLI::board, cli.shapeName, cli.x, cli.y, cli.parameter1);
             }
         }
         else if (cli.command == "redo") {
-            cli.redo();
+            CLI::redo();
         }
         else if (cli.command == "clear") {
             CLI::clear();

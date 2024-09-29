@@ -2,16 +2,18 @@
 #include <memory>
 #include "board.h"
 
+Board CLI::board;
+
 void CLI::draw() {
     board.grid.assign(board.boardHeight, std::vector<char>(board.boardWidth, ' '));
-    for (const auto& figure : board.getFigures()) {
+    for (const std::shared_ptr<Figure>& figure : board.getFigures()) {
         figure->draw(board);
     }
     board.print();
 }
 
 
-void CLI::list() const {
+void CLI::list() {
     std::cout << "Figures on the board:" << std::endl;
     for (const std::shared_ptr<Figure>& figure : board.getFigures()) {
         if (figure != nullptr) {

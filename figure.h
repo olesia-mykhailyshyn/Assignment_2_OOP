@@ -45,10 +45,11 @@ private:
 
 class Line : public Figure {
 public:
-    explicit Line(int x, int y, int size) : x(x), y(y), size(size) {}
+    explicit Line(int x, int y, int size, bool diagonal = false) : x(x), y(y), size(size), diagonal(diagonal) {}
     void draw(Board& board) override;
     std::string getInfo() const override;
 
 private:
     int x, y, size;
+    bool diagonal;
 };

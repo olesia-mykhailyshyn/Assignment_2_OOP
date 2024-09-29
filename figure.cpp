@@ -10,7 +10,6 @@ void Triangle::draw(Board& board) {
         int rightMost = x + i; // ending right position
         int posY = y + i;      // vertical position
 
-        // draw the edges/border of the triangle
         if (posY < board.boardHeight) {
             if (leftMost >= 0 && leftMost < board.boardWidth) {
                 board.grid[posY][leftMost] = '*';  // draw the leftmost point
@@ -21,7 +20,6 @@ void Triangle::draw(Board& board) {
         }
     }
 
-    // draw the base of the triangle
     for (int j = 0; j < 2 * height - 1; ++j) {
         int baseX = x - height + 1 + j;
         int baseY = y + height - 1;
@@ -51,7 +49,6 @@ void Rectangle::draw(Board& board) {
 void Circle::draw(Board& board) {
     if (radius <= 0) return;
 
-    // Якщо коло виходить за межі дошки, дозволити малювання в допустимій частині
     for (int i = -radius; i <= radius; ++i) {
         for (int j = -radius; j <= radius; ++j) {
             if (i * i + j * j <= radius * radius) {
@@ -65,16 +62,27 @@ void Circle::draw(Board& board) {
     }
 }
 
-
 void Line::draw(Board& board) {
     if (size <= 0) return;
-    for (int i = 0; i < size; ++i) {
-        int drawX = x + i;
-        if (drawX >= 0 && drawX < board.boardWidth && y >= 0 && y < board.boardHeight) {
-            board.grid[y][drawX] = '*';
+
+    int x1 = x, y1 = y;
+    int x2 = x + size - 1, y2 = y + size - 1;
+    int dx = std::abs(x2 - x1), dy = std::abs(y2 - y1);
+    int sx = (x1 < x2) ? 1 : -1;
+    int sy = (y1 < y2) ? 1 : -1;
+    int err = dx - dy;
+
+    while (true) {
+        if (x1 >= 0 && x1 < board.boardWidth && y1 >= 0 && y1 < board.boardHeight) {
+            board.grid[y1][x1] = '*';
         }
+        if (x1 == x2 && y1 == y2) break;
+        int e2 = 2 * err;
+        if (e2 > -dy) { err -= dy; x1 += sx; }
+        if (e2 < dx) { err += dx; y1 += sy; }
     }
 }
+
 
 std::string Triangle::getInfo() const {
     return "Triangle at (" + std::to_string(x) + ", " + std::to_string(y) + "), height: " + std::to_string(height);
