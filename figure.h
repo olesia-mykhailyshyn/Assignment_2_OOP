@@ -1,47 +1,54 @@
 #pragma once
 #include <string>
-#include "board.h"
+
+class Board;
 
 class Figure {
 public:
-    virtual void draw(Board& board) const = 0;
-
-protected:
+    virtual void draw(Board& board) = 0;
+    virtual std::string getInfo() const = 0;
+    virtual ~Figure() = default;
 };
 
-class Triangle: public Figure {
+class Triangle : public Figure {
 public:
-    static void drawTriangle(Board& board, int x, int y, int height);
-};
+    explicit Triangle(int x, int y, int height) : x(x), y(y), height(height) {}
+    void draw(Board& board) override;
+    std::string getInfo() const override;
 
-class Rectangle: public Figure {
-public:
-    Rectangle() : x(0), y(0), width(0), height(0), rectRightXIndex(0), rectLeftXIndex(0),
-                  rectBottomYIndex(0), rectTopYIndex(0), drawAreaWidth(0), drawAreaHeight(0) {}
-
-    void drawRectangle(Board& board, int x, int y, int width, int height);
 private:
-    int x;
-    int y;
-    int width;
-    int height;
-    int rectRightXIndex;
-    int rectLeftXIndex;
-    int rectBottomYIndex;
-    int rectTopYIndex;
-    int drawAreaWidth;
-    int drawAreaHeight;
+    int x, y, height;
 };
 
-class Circle: public Figure {
+class Rectangle : public Figure {
 public:
-    void drawCircle(Board& board, int x, int y, int radius);
+    friend class Board;
+    explicit Rectangle(int x, int y, int width, int height) : x(x), y(y), width(width), height(height) {}
+    void draw(Board& board) override;
+    std::string getInfo() const override;
+
 private:
-    float dist; //distance to the centre
+    int x, y, width, height;
+    int xPos{}, rectRightXIndex{}, rectLeftXIndex{}, rectBottomYIndex{}, rectTopYIndex{}, drawAreaWidth{}, drawAreaHeight{};
 };
 
-class Line: public Figure {
+class Circle : public Figure {
 public:
-    void drawLine(Board& board, int x, int y, int size);
+    explicit Circle(int x, int y, int radius) : x(x), y(y), radius(radius) {}
+    void draw(Board& board) override;
+    std::string getInfo() const override;
+
 private:
+    int x, y, radius;
+    float dist{}; // distance to the centre
+};
+
+class Line : public Figure {
+public:
+    explicit Line(int x, int y, int size) : x(x), y(y), size(size) {}
+    void draw(Board& board) override;
+    std::string getInfo() const override;
+
+private:
+    int x, y, size;
 };

@@ -2,7 +2,7 @@
 #include "figure.h"
 #include "board.h"
 
-void Triangle::drawTriangle(Board& board, int x, int y, int height) {
+void Triangle::draw(Board& board) {
     if (height <= 0) return; // height must be positive and sensible
 
     for (int i = 0; i < height; ++i) {
@@ -31,7 +31,7 @@ void Triangle::drawTriangle(Board& board, int x, int y, int height) {
     }
 }
 
-void Rectangle::drawRectangle(Board& board, int xPos, int y, int width, int height) {
+void Rectangle::draw(Board& board) {
     if (width <=0) { return;}
     if (height <=0) { return;}
     if (xPos < 0 || y < 0 || width < 1 || height < 1)
@@ -61,7 +61,7 @@ void Rectangle::drawRectangle(Board& board, int xPos, int y, int width, int heig
     }
 }
 
-void Circle::drawCircle(Board& board, int x, int y, int radius) {
+void Circle::draw(Board& board) {
     if (radius <=0) { return;}
     if (radius < 1 || x - radius < 0 || x + radius >= board.boardWidth ||
         y - radius < 0 || y + radius >= board.boardHeight) {
@@ -69,7 +69,7 @@ void Circle::drawCircle(Board& board, int x, int y, int radius) {
         return;
     }
 
-    //for horisontal movement
+    //for horizontal movement
     for (int i = 0; i <= 2 * radius; i++) {
         //for vertical movement
         for (int j = 0; j <= 2 * radius; j++ ) {
@@ -85,7 +85,7 @@ void Circle::drawCircle(Board& board, int x, int y, int radius) {
     }
 }
 
-void Line::drawLine(Board& board, int x, int y, int size) {
+void Line::draw(Board& board) {
     if (size <= 0) return;
     for (int i = 0; i < size; ++i) {
         int drawX = x + i;
@@ -93,4 +93,20 @@ void Line::drawLine(Board& board, int x, int y, int size) {
             board.grid[y][drawX] = '*';
         }
     }
+}
+
+std::string Triangle::getInfo() const {
+    return "Triangle at (" + std::to_string(x) + ", " + std::to_string(y) + "), height: " + std::to_string(height);
+}
+
+std::string Rectangle::getInfo() const {
+    return "Rectangle at (" + std::to_string(x) + ", " + std::to_string(y) + "), width: " + std::to_string(width) + ", height: " + std::to_string(height);
+}
+
+std::string Circle::getInfo() const {
+    return "Circle at (" + std::to_string(x) + ", " + std::to_string(y) + "), radius: " + std::to_string(radius);
+}
+
+std::string Line::getInfo() const {
+    return "Line at (" + std::to_string(x) + ", " + std::to_string(y) + "), length: " + std::to_string(size);
 }
