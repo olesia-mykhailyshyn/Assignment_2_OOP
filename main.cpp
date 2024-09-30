@@ -15,7 +15,7 @@ int main() {
             CLI::list();
         }
         else if (cli.command == "shapes") {
-            cli.shapes();
+            CLI::shapes();
         }
         else if (cli.command == "add") {
             std::cout << "Enter shapeName (triangle/rectangle/circle/line): " << std::endl;
@@ -44,11 +44,13 @@ int main() {
             CLI::redo();
         }
         else if (cli.command == "clear") {
-            CLI::clear();
+            CLI::clear(cli.filePath);
         }
         else if (cli.command == "save") {
+            CLI::save(cli.filePath);
         }
         else if (cli.command == "load") {
+            CLI::load(cli.filePath);
         }
         else if (cli.command == "exit") {
             std::cout << "Exiting the program." << std::endl;

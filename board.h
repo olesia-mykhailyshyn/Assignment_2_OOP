@@ -15,7 +15,7 @@ public:
 
     void print() const;
 
-    std::vector<std::shared_ptr<Figure>> getFigures() const;
+    [[nodiscard]] std::vector<std::shared_ptr<Figure>> getFigures() const;
 
     void addFigure(const std::shared_ptr<Figure>& figure);
 

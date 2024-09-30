@@ -89,7 +89,8 @@ std::string Triangle::getInfo() const {
 }
 
 std::string Rectangle::getInfo() const {
-    return "Rectangle at (" + std::to_string(x) + ", " + std::to_string(y) + "), width: " + std::to_string(width) + ", height: " + std::to_string(height);
+    return "Rectangle at (" + std::to_string(x) + ", " + std::to_string(y) + "), width: "
+    + std::to_string(width) + ", height: " + std::to_string(height);
 }
 
 std::string Circle::getInfo() const {
@@ -98,4 +99,21 @@ std::string Circle::getInfo() const {
 
 std::string Line::getInfo() const {
     return "Line at (" + std::to_string(x) + ", " + std::to_string(y) + "), length: " + std::to_string(size);
+}
+
+std::string Line::getSaveFormat() const {
+    return "Line " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(size) + " 0";
+}
+
+std::string Triangle::getSaveFormat() const {
+    return "Triangle " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(height) + " 0";
+}
+
+std::string Rectangle::getSaveFormat() const {
+    return "Rectangle " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(width)
+    + " " + std::to_string(height);
+}
+
+std::string Circle::getSaveFormat() const {
+    return "Circle " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(radius) + " 0";
 }
