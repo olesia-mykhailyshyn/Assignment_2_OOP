@@ -14,13 +14,9 @@ public:
     Board() : grid(boardHeight, std::vector<char>(boardWidth, ' ')) {}
 
     void print() const;
-
     [[nodiscard]] std::vector<std::shared_ptr<Figure>> getFigures() const;
-
-    void addFigure(const std::shared_ptr<Figure>& figure);
-
+    bool addFigure(const std::shared_ptr<Figure>& figure);
     [[nodiscard]] bool isDuplicate(const std::shared_ptr<Figure>& figure) const;
-    [[nodiscard]] bool isOutOfBounds(const std::shared_ptr<Figure>& figure) const;
 
     friend class Triangle;
     friend class Rectangle;

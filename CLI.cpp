@@ -50,11 +50,16 @@ void CLI::add(Board& board, const std::string& shapeName, int x, int y, int para
     else if (shapeName == "line") {
         newFigure = std::make_shared<Line>(x, y, parameter1);
     }
+    else {
+        std::cout << "Invalid shape name: " << shapeName << ". Please enter a valid shape (triangle/rectangle/circle/line)." << std::endl;
+        return;
+    }
 
-    if (newFigure) {
-        board.addFigure(newFigure);
+    if (newFigure && board.addFigure(newFigure)) {
+        std::cout << "Successfully added " << shapeName << " to the board." << std::endl;
     }
 }
+
 
 void CLI::undo() {
     if(board.figures.empty()) {
@@ -92,25 +97,44 @@ void CLI::load(const std::string& filePath) {
     if (input.is_open()) {
         board.figures.clear();
         std::string shapeName;
+        bool allFiguresLoaded = true;
+
         while (input >> shapeName) {
             int x, y, param1, param2;
             input >> x >> y >> param1 >> param2;
 
+            std::shared_ptr<Figure> newFigure = nullptr;
+
             if (shapeName == "Triangle") {
-                add(board, "triangle", x, y, param1);
+                newFigure = std::make_shared<Triangle>(x, y, param1);
             }
             else if (shapeName == "Rectangle") {
-                add(board, "rectangle", x, y, param1, param2);
+                newFigure = std::make_shared<Rectangle>(x, y, param1, param2);
             }
             else if (shapeName == "Circle") {
-                add(board, "circle", x, y, param1);
+                newFigure = std::make_shared<Circle>(x, y, param1);
             }
             else if (shapeName == "Line") {
-                add(board, "line", x, y, param1);
+                newFigure = std::make_shared<Line>(x, y, param1);
+            }
+            else {
+                std::cout << "Invalid shape found in file: " << shapeName << ". Aborting load." << std::endl;
+                allFiguresLoaded = false;
+                break;
+            }
+
+            if (newFigure && !board.addFigure(newFigure)) {
+                allFiguresLoaded = false;
             }
         }
         input.close();
-        std::cout << "Figures loaded from " << filePath << std::endl;
+
+        if (allFiguresLoaded) {
+            std::cout << "Figures loaded from " << filePath << std::endl;
+        }
+        else {
+            std::cout << "Error: Not all figures could be loaded from " << filePath << std::endl;
+        }
     }
     else {
         std::cout << "Could not open file " << filePath << " for reading." << std::endl;
@@ -120,7 +144,8 @@ void CLI::load(const std::string& filePath) {
 void CLI::clear(const std::string& filePath) {
     if(board.figures.empty()) {
         std::cout<< "There are no figures. Clear command cannot be done." << std::endl;
-    } else {
+    }
+    else {
         board.figures.clear();
         std::ofstream ofs;
         ofs.open(filePath, std::ofstream::out | std::ofstream::trunc);

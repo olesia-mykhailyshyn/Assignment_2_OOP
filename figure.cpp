@@ -2,8 +2,14 @@
 #include "figure.h"
 #include "board.h"
 
+bool Figure::isOutOfBounds(int boardWidth, int boardHeight) const {
+    return isPositionOutOfBounds(x, y, boardWidth, boardHeight);
+}
+
 void Triangle::draw(Board& board) {
-    if (height <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) return;
+    if (height <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) {
+        return;
+    }
 
     for (int i = 0; i < height; ++i) {
         int leftMost = x - i;
@@ -44,12 +50,14 @@ std::string Triangle::getSaveFormat() const {
 }
 
 bool Triangle::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return height > boardHeight || 2 * height > boardWidth || y < 0 || y >= boardHeight || x < 0 || x >= boardWidth;
+    return Figure::isPositionOutOfBounds(x, y, boardWidth, boardHeight) || height <= 0 ||
+           height > boardHeight || 2 * height > boardWidth;
 }
 
-// Rectangle Implementation
 void Rectangle::draw(Board& board) {
-    if (width <= 0 || height <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) return;
+    if (width <= 0 || height <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) {
+        return;
+    }
 
     int right = std::min(x + width - 1, board.boardWidth - 1);
     int bottom = std::min(y + height - 1, board.boardHeight - 1);
@@ -72,18 +80,23 @@ std::string Rectangle::getSaveFormat() const {
 }
 
 bool Rectangle::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return width > boardWidth || height > boardHeight || x < 0 || y < 0 || x >= boardWidth || y >= boardHeight;
+    return Figure::isPositionOutOfBounds(x, y, boardWidth, boardHeight) || width <= 0 ||
+           height <= 0 || x + width > boardWidth || y + height > boardHeight;
 }
 
-// Circle Implementation
 void Circle::draw(Board& board) {
-    if (radius <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) return;
+    if (radius <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) {
+        return;
+    }
 
     for (int i = -radius; i <= radius; ++i) {
         for (int j = -radius; j <= radius; ++j) {
-            if (i * i + j * j <= radius * radius) {
+            int distanceSquared = i * i + j * j;
+
+            if (distanceSquared >= radius * radius - radius && distanceSquared <= radius * radius) {
                 int drawX = x + j;
                 int drawY = y + i;
+
                 if (drawX >= 0 && drawX < board.boardWidth && drawY >= 0 && drawY < board.boardHeight) {
                     board.grid[drawY][drawX] = '*';
                 }
@@ -101,11 +114,14 @@ std::string Circle::getSaveFormat() const {
 }
 
 bool Circle::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return radius > boardWidth / 2 || radius > boardHeight / 2 || x < 0 || y < 0 || x >= boardWidth || y >= boardHeight;
+    return Figure::isPositionOutOfBounds(x, y, boardWidth, boardHeight) || radius <= 0 ||
+           x - radius < 0 || x + radius >= boardWidth || y - radius < 0 || y + radius >= boardHeight;
 }
 
 void Line::draw(Board& board) {
-    if (size <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) return;
+    if (size <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) {
+        return;
+    }
 
     int x1 = x, y1 = y;
     int x2 = std::min(x + size - 1, board.boardWidth - 1);
@@ -122,7 +138,8 @@ void Line::draw(Board& board) {
             break;
         }
         int e2 = 2 * err;
-        if (e2 > -dy) { err -= dy; x1 += sx; }
+        if (e2 > -dy) {
+            err -= dy; x1 += sx; }
     }
 }
 
@@ -135,5 +152,5 @@ std::string Line::getSaveFormat() const {
 }
 
 bool Line::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return size > boardWidth || x < 0 || y < 0 || x + size > boardWidth || y >= boardHeight;
+    return Figure::isPositionOutOfBounds(x, y, boardWidth, boardHeight) || size <= 0 || x + size > boardWidth;
 }
