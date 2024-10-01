@@ -5,7 +5,7 @@
 int main() {
     CLI cli;
     while (true) {
-        std::cout << "\nEnter command (draw/list/shapes/add/redo/clear/save/load/exit): " << std::endl;
+        std::cout << "\nEnter command (draw/list/shapes/add/undo/clear/save/load/exit): " << std::endl;
         std::cin >> cli.command;
 
         if (cli.command == "draw") {
@@ -40,8 +40,8 @@ int main() {
                 CLI::add(CLI::board, cli.shapeName, cli.x, cli.y, cli.parameter1);
             }
         }
-        else if (cli.command == "redo") {
-            CLI::redo();
+        else if (cli.command == "undo") {
+            CLI::undo();
         }
         else if (cli.command == "clear") {
             CLI::clear(cli.filePath);

@@ -8,6 +8,7 @@ public:
     virtual void draw(Board& board) = 0;
     [[nodiscard]] virtual std::string getInfo() const = 0;
     [[nodiscard]] virtual std::string getSaveFormat() const = 0;
+    [[nodiscard]] virtual bool isOutOfBounds(int boardWidth, int boardHeight) const = 0;
     virtual ~Figure() = default;
 };
 
@@ -17,6 +18,7 @@ public:
     void draw(Board& board) override;
     [[nodiscard]] std::string getInfo() const override;
     [[nodiscard]] std::string getSaveFormat() const override;
+    [[nodiscard]] bool isOutOfBounds(int boardWidth, int boardHeight) const override;
 
 private:
     int x, y, height;
@@ -29,10 +31,10 @@ public:
     void draw(Board& board) override;
     [[nodiscard]] std::string getInfo() const override;
     [[nodiscard]] std::string getSaveFormat() const override;
+    [[nodiscard]] bool isOutOfBounds(int boardWidth, int boardHeight) const override;
 
 private:
     int x, y, width, height;
-    int xPos{}, rectRightXIndex{}, rectLeftXIndex{}, rectBottomYIndex{}, rectTopYIndex{}, drawAreaWidth{}, drawAreaHeight{};
 };
 
 class Circle : public Figure {
@@ -41,20 +43,20 @@ public:
     void draw(Board& board) override;
     [[nodiscard]] std::string getInfo() const override;
     [[nodiscard]] std::string getSaveFormat() const override;
+    [[nodiscard]] bool isOutOfBounds(int boardWidth, int boardHeight) const override;
 
 private:
     int x, y, radius;
-    float dist{}; // distance to the centre
 };
 
 class Line : public Figure {
 public:
-    explicit Line(int x, int y, int size, bool diagonal = false) : x(x), y(y), size(size), diagonal(diagonal) {}
+    explicit Line(int x, int y, int size) : x(x), y(y), size(size){}
     void draw(Board& board) override;
     [[nodiscard]] std::string getInfo() const override;
     [[nodiscard]] std::string getSaveFormat() const override;
+    [[nodiscard]] bool isOutOfBounds(int boardWidth, int boardHeight) const override;
 
 private:
     int x, y, size;
-    bool diagonal;
 };

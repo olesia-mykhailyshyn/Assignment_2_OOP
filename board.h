@@ -19,6 +19,9 @@ public:
 
     void addFigure(const std::shared_ptr<Figure>& figure);
 
+    [[nodiscard]] bool isDuplicate(const std::shared_ptr<Figure>& figure) const;
+    [[nodiscard]] bool isOutOfBounds(const std::shared_ptr<Figure>& figure) const;
+
     friend class Triangle;
     friend class Rectangle;
     friend class Circle;

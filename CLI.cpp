@@ -56,7 +56,7 @@ void CLI::add(Board& board, const std::string& shapeName, int x, int y, int para
     }
 }
 
-void CLI::redo() {
+void CLI::undo() {
     if(board.figures.empty()) {
         std::cout<< "There are no figures. Redo command can not be done." << std::endl;
     }
@@ -90,6 +90,7 @@ void CLI::save(const std::string& filePath) {
 void CLI::load(const std::string& filePath) {
     std::ifstream input(filePath, std::ios::in);
     if (input.is_open()) {
+        board.figures.clear();
         std::string shapeName;
         while (input >> shapeName) {
             int x, y, param1, param2;
@@ -112,16 +113,14 @@ void CLI::load(const std::string& filePath) {
         std::cout << "Figures loaded from " << filePath << std::endl;
     }
     else {
-        std::cerr << "Could not open file " << filePath << " for reading." << std::endl;
+        std::cout << "Could not open file " << filePath << " for reading." << std::endl;
     }
 }
 
 void CLI::clear(const std::string& filePath) {
-    //system("cls");
     if(board.figures.empty()) {
-        std::cout<< "There are no figures. Clear command can not be done - nothing will change." << std::endl;
-    }
-    else{
+        std::cout<< "There are no figures. Clear command cannot be done." << std::endl;
+    } else {
         board.figures.clear();
         std::ofstream ofs;
         ofs.open(filePath, std::ofstream::out | std::ofstream::trunc);

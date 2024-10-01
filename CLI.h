@@ -8,7 +8,7 @@ public:
     static void list() ;
     static void shapes() ;
     static void add(Board& board, const std::string& shapeName, int x, int y, int parameter1, int parameter2 = 0);
-    static void redo();
+    static void undo();
     static void clear(const std::string& filePath);
     static void save(const std::string& filePath) ;
     static void load(const std::string& filePath);
