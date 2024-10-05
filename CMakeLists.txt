@@ -8,5 +8,5 @@ add_executable(Assignment_2 main.cpp
         board.cpp
         figure.cpp
         figure.h
-        CLI.h
-        CLI.cpp)
+        shapeType.cpp
+        shapeType.h)

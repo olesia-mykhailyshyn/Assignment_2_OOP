@@ -2,12 +2,12 @@
 #include "figure.h"
 #include "board.h"
 
-bool Figure::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return isPositionOutOfBounds(x, y, boardWidth, boardHeight);
+bool Figure::isPositionOutOfBounds(int x, int y, int boardWidth, int boardHeight) {
+    return (x < 0 || x >= boardWidth || y < 0 || y >= boardHeight);
 }
 
 void Triangle::draw(Board& board) {
-    if (height <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) {
+    if (height <= 0) {
         return;
     }
 
@@ -16,11 +16,7 @@ void Triangle::draw(Board& board) {
         int rightMost = x + i;
         int posY = y + i;
 
-        if (posY >= board.boardHeight) {
-            break;
-        }
-
-        if (posY >= 0) {
+        if (posY >= 0 && posY < board.boardHeight) {
             if (leftMost >= 0 && leftMost < board.boardWidth) {
                 board.grid[posY][leftMost] = '*';
             }
@@ -41,6 +37,10 @@ void Triangle::draw(Board& board) {
     }
 }
 
+bool Triangle::isOutOfBounds(int boardWidth, int boardHeight) const {
+    return height <= 0 || (y + height - 1 < 0) || (y >= boardHeight) || (x - height + 1 >= boardWidth) || (x + height - 1 < 0);
+}
+
 std::string Triangle::getInfo() const {
     return "Triangle at (" + std::to_string(x) + ", " + std::to_string(y) + "), height: " + std::to_string(height);
 }
@@ -49,15 +49,8 @@ std::string Triangle::getSaveFormat() const {
     return "Triangle " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(height) + " 0";
 }
 
-bool Triangle::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return Figure::isPositionOutOfBounds(x, y, boardWidth, boardHeight) || height <= 0 ||
-           height > boardHeight || 2 * height > boardWidth;
-}
-
 void Rectangle::draw(Board& board) {
-    if (width <= 0 || height <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) {
-        return;
-    }
+    if (width <= 0 || height <= 0) return;
 
     int right = std::min(x + width - 1, board.boardWidth - 1);
     int bottom = std::min(y + height - 1, board.boardHeight - 1);
@@ -71,6 +64,10 @@ void Rectangle::draw(Board& board) {
     }
 }
 
+bool Rectangle::isOutOfBounds(int boardWidth, int boardHeight) const {
+    return width <= 0 || height <= 0 || (x + width - 1 < 0) || (y + height - 1 < 0) || x >= boardWidth || y >= boardHeight;
+}
+
 std::string Rectangle::getInfo() const {
     return "Rectangle at (" + std::to_string(x) + ", " + std::to_string(y) + "), width: " + std::to_string(width) + ", height: " + std::to_string(height);
 }
@@ -79,30 +76,25 @@ std::string Rectangle::getSaveFormat() const {
     return "Rectangle " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(width) + " " + std::to_string(height);
 }
 
-bool Rectangle::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return Figure::isPositionOutOfBounds(x, y, boardWidth, boardHeight) || width <= 0 ||
-           height <= 0 || x + width > boardWidth || y + height > boardHeight;
-}
-
 void Circle::draw(Board& board) {
-    if (radius <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) {
-        return;
-    }
+    if (radius <= 0) return;
 
     for (int i = -radius; i <= radius; ++i) {
         for (int j = -radius; j <= radius; ++j) {
             int distanceSquared = i * i + j * j;
-
             if (distanceSquared >= radius * radius - radius && distanceSquared <= radius * radius) {
                 int drawX = x + j;
                 int drawY = y + i;
-
                 if (drawX >= 0 && drawX < board.boardWidth && drawY >= 0 && drawY < board.boardHeight) {
                     board.grid[drawY][drawX] = '*';
                 }
             }
         }
     }
+}
+
+bool Circle::isOutOfBounds(int boardWidth, int boardHeight) const {
+    return radius <= 0 || (x + radius < 0) || (x - radius >= boardWidth) || (y + radius < 0) || (y - radius >= boardHeight);
 }
 
 std::string Circle::getInfo() const {
@@ -113,44 +105,62 @@ std::string Circle::getSaveFormat() const {
     return "Circle " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(radius) + " 0";
 }
 
-bool Circle::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return Figure::isPositionOutOfBounds(x, y, boardWidth, boardHeight) || radius <= 0 ||
-           x - radius < 0 || x + radius >= boardWidth || y - radius < 0 || y + radius >= boardHeight;
-}
-
 void Line::draw(Board& board) {
-    if (size <= 0 || isOutOfBounds(board.boardWidth, board.boardHeight)) {
-        return;
+    int x1 = x;
+    int y1 = y;
+    int x2 = this->x2;
+    int y2 = this->y2;
+
+    int dx = std::abs(x2 - x1);
+    int dy = std::abs(y2 - y1);
+    int sx, sy;
+
+    if (x2 > x1) {
+        sx = 1;
+    }
+    else {
+        sx = -1;
     }
 
-    int x1 = x, y1 = y;
-    int x2 = std::min(x + size - 1, board.boardWidth - 1);
-    int y2 = y1;
-    int dx = std::abs(x2 - x1), dy = 0;
-    int sx = (x1 < x2) ? 1 : -1, sy = 0;
+    if (y2 > y1) {
+        sy = 1;
+    }
+    else {
+        sy = -1;
+    }
+
     int err = dx - dy;
 
     while (true) {
         if (x1 >= 0 && x1 < board.boardWidth && y1 >= 0 && y1 < board.boardHeight) {
             board.grid[y1][x1] = '*';
         }
+
         if (x1 == x2 && y1 == y2) {
             break;
         }
+
         int e2 = 2 * err;
+
         if (e2 > -dy) {
-            err -= dy; x1 += sx; }
+            err -= dy;
+            x1 += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            y1 += sy;
+        }
     }
 }
 
+bool Line::isOutOfBounds(int boardWidth, int boardHeight) const {
+    return (x < 0 && x2 < 0) || (y < 0 && y2 < 0) || (x >= boardWidth && x2 >= boardWidth) || (y >= boardHeight && y2 >= boardHeight);
+}
+
 std::string Line::getInfo() const {
-    return "Line at (" + std::to_string(x) + ", " + std::to_string(y) + "), length: " + std::to_string(size);
+    return "Line from (" + std::to_string(x) + ", " + std::to_string(y) + ") to (" + std::to_string(x2) + ", " + std::to_string(y2) + ")";
 }
 
 std::string Line::getSaveFormat() const {
-    return "Line " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(size) + " 0";
-}
-
-bool Line::isOutOfBounds(int boardWidth, int boardHeight) const {
-    return Figure::isPositionOutOfBounds(x, y, boardWidth, boardHeight) || size <= 0 || x + size > boardWidth;
+    return "Line " + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(x2) + " " + std::to_string(y2);
 }

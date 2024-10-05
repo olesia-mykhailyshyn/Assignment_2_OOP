@@ -1,58 +1,53 @@
 #include "board.h"
 #include "figure.h"
-#include "CLI.h"
+#include <iostream>
+#include <sstream>
 
 int main() {
-    CLI cli;
+    Board board;
+    std::string input;
+
     while (true) {
         std::cout << "\nEnter command (draw/list/shapes/add/undo/clear/save/load/exit): " << std::endl;
-        std::cin >> cli.command;
+        std::getline(std::cin, input);
 
-        if (cli.command == "draw") {
-            CLI::draw();
-        }
-        else if (cli.command == "list") {
-            CLI::list();
-        }
-        else if (cli.command == "shapes") {
-            CLI::shapes();
-        }
-        else if (cli.command == "add") {
-            std::cout << "Enter shapeName (triangle/rectangle/circle/line): " << std::endl;
-            std::cin >> cli.shapeName;
-            std::cout << "Enter x: " << std::endl;
-            std::cin >> cli.x;
-            std::cout << "Enter y: " << std::endl;
-            std::cin >> cli.y;
+        std::istringstream iss(input);
+        std::string command;
+        iss >> command;
 
-            if (cli.shapeName == "rectangle") {
-                std::cout << "Enter width: " << std::endl;
-                std::cin >> cli.parameter1;
-                std::cout << "Enter height: " << std::endl;
-                std::cin >> cli.parameter2;
+        if (command == "draw") {
+            board.draw();
+        }
+        else if (command == "list") {
+            board.list();
+        }
+        else if (command == "shapes") {
+            Board::shapes();
+        }
+        else if (command == "add") {
+            std::string shapeName;
+            int x, y, param1, param2 = 0;
 
-                CLI::add(CLI::board, cli.shapeName, cli.x, cli.y, cli.parameter1, cli.parameter2);
+            iss >> shapeName >> x >> y >> param1;
+            if (shapeName == "rectangle" || shapeName == "line") {
+                iss >> param2;
             }
-            else {
-                std::cout << "Enter height/radius/size: " << std::endl;
-                std::cin >> cli.parameter1;
 
-                CLI::add(CLI::board, cli.shapeName, cli.x, cli.y, cli.parameter1);
-            }
+            Board::add(board, shapeName, x, y, param1, param2);
         }
-        else if (cli.command == "undo") {
-            CLI::undo();
+        else if (command == "undo") {
+            board.undo();
         }
-        else if (cli.command == "clear") {
-            CLI::clear(cli.filePath);
+        else if (command == "clear") {
+            board.clear(board.getFilePath());
         }
-        else if (cli.command == "save") {
-            CLI::save(cli.filePath);
+        else if (command == "save") {
+            board.save(board.getFilePath());
         }
-        else if (cli.command == "load") {
-            CLI::load(cli.filePath);
+        else if (command == "load") {
+            board.load(board.getFilePath());
         }
-        else if (cli.command == "exit") {
+        else if (command == "exit") {
             std::cout << "Exiting the program." << std::endl;
             break;
         }
@@ -60,5 +55,6 @@ int main() {
             std::cout << "Unknown command." << std::endl;
         }
     }
+
     return 0;
 }
