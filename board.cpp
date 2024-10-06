@@ -2,7 +2,6 @@
 #include "fstream"
 #include <iostream>
 #include <iomanip>
-#include "shapeType.h"
 
 void Board::print() const {
     std::cout << "   ";
@@ -36,133 +35,38 @@ std::vector<std::shared_ptr<Figure>> Board::getFigures() const {
     return figures;
 }
 
-bool Board::addFigure(const std::shared_ptr<Figure>& figure) {
-    if (isDuplicate(figure)) {
-        std::cout << "Figure with the same parameters already exists at the same position!" << std::endl;
-        return false;
-    }
-    else if (figure->isOutOfBounds(boardWidth, boardHeight)) {
-        std::cout << "Figure is out of bounds or larger than the board!" << std::endl;
-        return false;
-    }
-    else {
-        figures.push_back(figure);
-        return true;
-    }
-}
-
-bool Board::isDuplicate(const std::shared_ptr<Figure>& figure) const {
-    for (const std::shared_ptr<Figure>& existingFigure : figures) {
-        if (figure->getSaveFormat() == existingFigure->getSaveFormat()) {
-            return true;
-        }
-    }
-    return false;
-}
-
-void Board::draw() {
-    grid.assign(boardHeight, std::vector<char>(boardWidth, ' '));
-    for (const std::shared_ptr<Figure>& figure : getFigures()) {
-        figure->draw(*this);
-    }
-    print();
-}
-
-void Board::list() const {
-    if (figures.empty()) {
-        std::cout << "There are no any figures on the board." << std::endl;
-    }
-    else {
-        std::cout << "Figures on the board:" << std::endl;
-        for (const std::shared_ptr<Figure>& figure : getFigures()) {
-            if (figure != nullptr) {
-                std::cout << figure->getInfo() << std::endl;
-            }
-        }
-    }
-}
-
-void Board::shapes() {
-    std::cout << "List of available shapes and their parameters:" << std::endl;
-    std::cout << "1. Circle: x, y, radius" << std::endl;
-    std::cout << "2. Rectangle: x, y, width, height" << std::endl;
-    std::cout << "3. Triangle: x, y, height" << std::endl;
-    std::cout << "4. Line: x1, y1, x2, y2 (start and end points)" << std::endl;
-}
-
-void Board::add(Board& board, const std::string& shapeName, int x, int y, int parameter1, int parameter2) {
-    ShapeType shapeType = stringToShapeType(shapeName);
+void Board::add(const std::string& shapeName, int x, int y, int parameter1, int parameter2) {
     std::shared_ptr<Figure> newFigure = nullptr;
 
-    switch (shapeType) {
-        case ShapeType::Triangle:
-            newFigure = std::make_shared<Triangle>(x, y, parameter1);
-            break;
-        case ShapeType::Rectangle:
-            newFigure = std::make_shared<Rectangle>(x, y, parameter1, parameter2);
-            break;
-        case ShapeType::Circle:
-            newFigure = std::make_shared<Circle>(x, y, parameter1);
-            break;
-        case ShapeType::Line:
-            newFigure = std::make_shared<Line>(x, y, parameter1, parameter2);
-            break;
-        default:
-            std::cout << "Invalid shape name." << std::endl;
-            return;
+    if (shapeName == "triangle") {
+        newFigure = std::make_shared<Triangle>(x, y, parameter1);
     }
-
-    if (newFigure && board.addFigure(newFigure)) {
-        std::cout << "Figure added successfully." << std::endl;
+    else if (shapeName == "rectangle") {
+        newFigure = std::make_shared<Rectangle>(x, y, parameter1, parameter2);
     }
-}
-
-void Board::undo() {
-    if(figures.empty()) {
-        std::cout<< "There are no figures. Redo command can not be done." << std::endl;
+    else if (shapeName == "circle") {
+        newFigure = std::make_shared<Circle>(x, y, parameter1);
+    }
+    else if (shapeName == "line") {
+        newFigure = std::make_shared<Line>(x, y, parameter1, parameter2);
     }
     else {
-        figures.pop_back();
-        std::cout<< "The last added figure was deleted." << std::endl;
+        std::cout << "Invalid shape name." << std::endl;
+        return;
     }
-}
 
-void Board::save(const std::string& filePath) const {
-    std::ofstream myFile(filePath, std::ios::out);
-    if (myFile.is_open()) {
-        if (figures.empty()) {
-            std::cout << "There are no figures. An empty file will be saved." << std::endl;
-        }
-        else {
-            for (const std::shared_ptr<Figure>& figure : getFigures()) {
-                if (figure != nullptr) {
-                    myFile << figure->getSaveFormat() << std::endl;
-                }
-            }
-            myFile.close();
-            std::cout << "Figures saved to " << filePath << std::endl;
-        }
+    if (isDuplicate(newFigure)) {
+        std::cout << "Error: Figure with the same parameters already exists at the same position!" << std::endl;
+        return;
+    }
+    else if (newFigure->isOutOfBounds(boardWidth, boardHeight)) {
+        std::cout << "Error: Figure is too large to fit on the board and cannot be added." << std::endl;
+        return;
     }
     else {
-        std::cout << "Could not open file " << filePath << " for writing." << std::endl;
+        figures.push_back(newFigure);
+        std::cout << "Figure added successfully!" << std::endl;
     }
-}
-
-void Board::clear(const std::string& filePath) {
-    if(figures.empty()) {
-        std::cout<< "There are no figures. Clear command cannot be done." << std::endl;
-    }
-    else {
-        figures.clear();
-        std::ofstream ofs;
-        ofs.open(filePath, std::ofstream::out | std::ofstream::trunc);
-        ofs.close();
-        std::cout << "All shapes are removed from the blackboard. File is empty as well." << std::endl;
-    }
-}
-
-std::string Board::getFilePath() const {
-    return filePath;
 }
 
 void Board::load(const std::string& filePath) {
@@ -212,11 +116,22 @@ void Board::load(const std::string& filePath) {
             newFigure = std::make_shared<Line>(x, y, param1, param2);
         }
         else {
+            std::cout << "Error: Invalid shape type found in file. Aborting load." << std::endl;
             loadSuccessful = false;
             break;
         }
 
-        if (newFigure && !addFigure(newFigure)) {
+        if (newFigure->isOutOfBounds(boardWidth, boardHeight)) {
+            std::cout << "Error: Figure " << newFigure->getInfo() << " is too large to fit on the board." << std::endl;
+            loadSuccessful = false;
+            break;
+        }
+
+        if (!isDuplicate(newFigure)) {
+            figures.push_back(newFigure);
+        }
+        else {
+            std::cout << "Error: Duplicate figure found in file. Aborting load." << std::endl;
             loadSuccessful = false;
             break;
         }
@@ -230,4 +145,92 @@ void Board::load(const std::string& filePath) {
     else {
         std::cout << "Invalid data found in file: " << filePath << ". Aborting load." << std::endl;
     }
+}
+
+bool Board::isDuplicate(const std::shared_ptr<Figure>& figure) const {
+    for (const std::shared_ptr<Figure>& existingFigure : figures) {
+        if (figure->getSaveFormat() == existingFigure->getSaveFormat()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Board::draw() {
+    grid.assign(boardHeight, std::vector<char>(boardWidth, ' '));
+    for (const std::shared_ptr<Figure>& figure : getFigures()) {
+        figure->draw(*this);
+    }
+    print();
+}
+
+void Board::list() const {
+    if (figures.empty()) {
+        std::cout << "There are no figures on the board." << std::endl;
+    }
+    else {
+        std::cout << "Figures on the board:" << std::endl;
+        for (const std::shared_ptr<Figure>& figure : getFigures()) {
+            if (figure != nullptr) {
+                std::cout << figure->getInfo() << std::endl;
+            }
+        }
+    }
+}
+
+void Board::shapes() {
+    std::cout << "List of available shapes and their parameters:" << std::endl;
+    std::cout << "1. Circle: x, y, radius" << std::endl;
+    std::cout << "2. Rectangle: x, y, width, height" << std::endl;
+    std::cout << "3. Triangle: x, y, height" << std::endl;
+    std::cout << "4. Line: x1, y1, x2, y2 (start and end points)" << std::endl;
+}
+
+
+void Board::undo() {
+    if (figures.empty()) {
+        std::cout << "There are no figures. Undo command cannot be performed." << std::endl;
+    }
+    else {
+        figures.pop_back();
+        std::cout << "The last added figure was deleted." << std::endl;
+    }
+}
+
+void Board::save(const std::string& filePath) const {
+    std::ofstream myFile(filePath, std::ios::out);
+    if (myFile.is_open()) {
+        if (figures.empty()) {
+            std::cout << "There are no figures. An empty file will be saved." << std::endl;
+        }
+        else {
+            for (const std::shared_ptr<Figure>& figure : getFigures()) {
+                if (figure != nullptr) {
+                    myFile << figure->getSaveFormat() << std::endl;
+                }
+            }
+            std::cout << "Figures saved to " << filePath << std::endl;
+        }
+        myFile.close();
+    }
+    else {
+        std::cout << "Could not open file " << filePath << " for writing." << std::endl;
+    }
+}
+
+void Board::clear(const std::string& filePath) {
+    if (figures.empty()) {
+        std::cout << "There are no figures. Clear command cannot be performed." << std::endl;
+    }
+    else {
+        figures.clear();
+        std::ofstream ofs;
+        ofs.open(filePath, std::ofstream::out | std::ofstream::trunc);
+        ofs.close();
+        std::cout << "All shapes are removed from the board. File is empty as well." << std::endl;
+    }
+}
+
+std::string Board::getFilePath() const {
+    return filePath;
 }

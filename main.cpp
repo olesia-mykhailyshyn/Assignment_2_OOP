@@ -1,5 +1,4 @@
 #include "board.h"
-#include "figure.h"
 #include <iostream>
 #include <sstream>
 
@@ -33,7 +32,7 @@ int main() {
                 iss >> param2;
             }
 
-            Board::add(board, shapeName, x, y, param1, param2);
+            board.add(shapeName, x, y, param1, param2);
         }
         else if (command == "undo") {
             board.undo();

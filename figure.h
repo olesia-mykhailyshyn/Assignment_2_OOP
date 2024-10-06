@@ -36,7 +36,6 @@ public:
     [[nodiscard]] std::string getInfo() const override;
     [[nodiscard]] std::string getSaveFormat() const override;
     [[nodiscard]] bool isOutOfBounds(int boardWidth, int boardHeight) const override;
-
 private:
     int width, height;
 };
@@ -60,7 +59,6 @@ public:
     [[nodiscard]] std::string getInfo() const override;
     [[nodiscard]] std::string getSaveFormat() const override;
     [[nodiscard]] bool isOutOfBounds(int boardWidth, int boardHeight) const override;
-
 private:
     int x2, y2;
 };

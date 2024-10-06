@@ -52,13 +52,18 @@ std::string Triangle::getSaveFormat() const {
 void Rectangle::draw(Board& board) {
     if (width <= 0 || height <= 0) return;
 
-    int right = std::min(x + width - 1, board.boardWidth - 1);
-    int bottom = std::min(y + height - 1, board.boardHeight - 1);
+    int right = x + width - 1;
+    int bottom = y + height - 1;
 
-    for (int row = std::max(0, y); row <= bottom; ++row) {
-        for (int col = std::max(0, x); col <= right; ++col) {
-            if (row == y || row == bottom || col == x || col == right) {
-                board.grid[row][col] = '*';
+    for (int row = y; row <= bottom; ++row) {
+        for (int col = x; col <= right; ++col) {
+            if (row >= 0 && row < board.boardHeight && col >= 0 && col < board.boardWidth) {
+                if ((row == y || row == bottom) && col < board.boardWidth) {
+                    board.grid[row][col] = '*';
+                }
+                if ((col == x || col == right) && row < board.boardHeight) {
+                    board.grid[row][col] = '*';
+                }
             }
         }
     }
@@ -113,21 +118,9 @@ void Line::draw(Board& board) {
 
     int dx = std::abs(x2 - x1);
     int dy = std::abs(y2 - y1);
-    int sx, sy;
 
-    if (x2 > x1) {
-        sx = 1;
-    }
-    else {
-        sx = -1;
-    }
-
-    if (y2 > y1) {
-        sy = 1;
-    }
-    else {
-        sy = -1;
-    }
+    int sx = (x1 < x2) ? 1 : -1;
+    int sy = (y1 < y2) ? 1 : -1;
 
     int err = dx - dy;
 
@@ -146,6 +139,7 @@ void Line::draw(Board& board) {
             err -= dy;
             x1 += sx;
         }
+
         if (e2 < dx) {
             err += dx;
             y1 += sy;
